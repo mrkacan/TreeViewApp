@@ -1,25 +1,37 @@
 import React from 'react';
-import {Pressable, Text, View} from 'react-native';
+import {View} from 'react-native';
 import styles from './styles';
-import TickIcon from "../../../assets/Tick";
+import TreeItem from "../TreeItem";
 
-type TreeItemProps = {
+export type Item = {
+    id: number;
+    name: string;
     isSelected: boolean;
-    text: string;
+    children: any[]
 }
 
-const TreeItem: React.FC<TreeItemProps> = ({
-                                               isSelected,
-                                               text,
-                                           }) => {
-    return <Pressable style={styles.wrapper}>
-        <View style={styles.tickWrapper}>
-            {isSelected ? <TickIcon width={15} height={15} color={"#088ab9"}/> : null}
+type TreeViewProps = {
+    data: Item[];
+}
+
+const TreeView: React.FC<TreeViewProps> = ({data}) => {
+    const renderTree = (data: Item[], isChildren: boolean) => {
+        const treeData = data.map((item) => {
+            return <View style={{marginLeft: isChildren ? 25 : 0}}>
+                <TreeItem text={item?.name} isSelected={item.isSelected}/>
+                {item?.children ? renderTree(item.children, !!item.children) : null}
+            </View>
+        })
+
+        return treeData;
+    }
+
+
+    return (
+        <View style={styles.container}>
+            {renderTree(data, false)}
         </View>
-        <Text style={styles.text}>
-            {text}
-        </Text>
-    </Pressable>
+    );
 }
 
-export default TreeItem;
+export default TreeView;
